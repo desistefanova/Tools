@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'main.dart';
+part of 'model.dart';
 
 // **************************************************************************
 // RealmObjectGenerator
@@ -8,12 +8,14 @@ part of 'main.dart';
 
 class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   Product(
+    ObjectId id,
     String raw, {
     String? name,
     String? owner,
     DateTime? lastUpdatedDate,
     Iterable<Version> versions = const [],
   }) {
+    RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'raw', raw);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'owner', owner);
@@ -23,6 +25,11 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   }
 
   Product._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, '_id', value);
 
   @override
   String get raw => RealmObjectBase.get<String>(this, 'raw') as String;
@@ -65,6 +72,8 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Product._);
     return const SchemaObject(ObjectType.realmObject, Product, 'Product', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', primaryKey: true),
       SchemaProperty('raw', RealmPropertyType.string),
       SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('owner', RealmPropertyType.string, optional: true),
@@ -80,6 +89,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
 
   Version(
+    ObjectId id,
     String version, {
     DateTime? publishDate,
     bool isReleased = false,
@@ -90,6 +100,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
         'isReleased': false,
       });
     }
+    RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'version', version);
     RealmObjectBase.set(this, 'publishDate', publishDate);
     RealmObjectBase.set(this, 'isReleased', isReleased);
@@ -98,6 +109,11 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   }
 
   Version._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, '_id', value);
 
   @override
   String get version => RealmObjectBase.get<String>(this, 'version') as String;
@@ -135,6 +151,8 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Version._);
     return const SchemaObject(ObjectType.realmObject, Version, 'Version', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', primaryKey: true),
       SchemaProperty('version', RealmPropertyType.string),
       SchemaProperty('publishDate', RealmPropertyType.timestamp,
           optional: true),
@@ -147,14 +165,21 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
 
 class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   Group(
+    ObjectId id,
     String name, {
     Iterable<Item> items = const [],
   }) {
+    RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set<RealmList<Item>>(this, 'items', RealmList<Item>(items));
   }
 
   Group._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, '_id', value);
 
   @override
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
@@ -180,6 +205,8 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Group._);
     return const SchemaObject(ObjectType.realmObject, Group, 'Group', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('items', RealmPropertyType.object,
           linkTarget: 'Item', collectionType: RealmCollectionType.list),
@@ -189,11 +216,13 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
 
 class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   Item(
+    ObjectId id,
     String content, {
     String? number,
     String? refference,
     String? example,
   }) {
+    RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'content', content);
     RealmObjectBase.set(this, 'number', number);
     RealmObjectBase.set(this, 'refference', refference);
@@ -201,6 +230,11 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   }
 
   Item._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, '_id', value);
 
   @override
   String get content => RealmObjectBase.get<String>(this, 'content') as String;
@@ -237,6 +271,8 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Item._);
     return const SchemaObject(ObjectType.realmObject, Item, 'Item', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', primaryKey: true),
       SchemaProperty('content', RealmPropertyType.string),
       SchemaProperty('number', RealmPropertyType.string, optional: true),
       SchemaProperty('refference', RealmPropertyType.string, optional: true),

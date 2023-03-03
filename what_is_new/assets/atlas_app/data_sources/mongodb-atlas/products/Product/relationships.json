@@ -1,0 +1,8 @@
+{
+    "versions": {
+        "ref": "#/relationship/mongodb-atlas/products/Version",
+        "source_key": "versions",
+        "foreign_key": "_id",
+        "is_list": true
+    }
+}

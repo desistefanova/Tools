@@ -1,7 +1,7 @@
 [
   {  
-    "sourcePath":"https://github.com/realm/realm-dart/blob/main/CHANGELOG.md",
-    "productName":"Realm Dart",
+    "sourcePath":"https://raw.githubusercontent.com/realm/realm-dart/main/CHANGELOG.md",
+    "productName":"Realm Dart SDK",
     "productOwner":"MongoDB"
   }
 ]

@@ -1,0 +1,8 @@
+{
+    "app_id": "products_sync-kapsb",
+    "config_version": 20210101,
+    "name": "products_sync",
+    "location": "DE-FF",
+    "provider_region": "aws-eu-central-1",
+    "deployment_model": "LOCAL"
+}

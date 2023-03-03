@@ -1,0 +1,29 @@
+{
+    "bsonType": "object",
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "groups": {
+            "bsonType": "array",
+            "items": {
+                "bsonType": "objectId"
+            }
+        },
+        "isReleased": {
+            "bsonType": "bool"
+        },
+        "publishDate": {
+            "bsonType": "date"
+        },
+        "version": {
+            "bsonType": "string"
+        }
+    },
+    "required": [
+        "_id",
+        "version",
+        "isReleased"
+    ],
+    "title": "Version"
+}

@@ -4,12 +4,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:realm/realm.dart';
-part 'main.g.dart';
+import 'model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  List<Input> inputList = await loadInput('assets/source_config.json');
+  List<Product> products = await loadProducts();
+
+  final realmConfig = json.decode(await rootBundle.loadString('assets/atlas_app/realm_config.json'));
+
+  Realm realm = await createRealm(realmConfig['app_id']);
+  realm.write(() => realm.addAll(products));
+  await realm.syncSession.waitForUpload();
   runApp(const MyApp());
+}
+
+Future<List<Product>> loadProducts() async {
+  List<Product> products = [];
+  List<Input> inputList = await loadInput('assets/source_config.json');
+  for (var input in inputList) {
+    products.add(await readProduct(input));
+  }
+  return products;
+}
+
+Future<Realm> createRealm(String appId) async {
+  final appConfig = AppConfiguration(appId);
+  final app = App(appConfig);
+  final user = await app.logIn(Credentials.anonymous());
+
+  final flxConfig = Configuration.flexibleSync(user, [Product.schema, Version.schema, Group.schema, Item.schema]);
+  var realm = Realm(flxConfig);
+  print("Created local realm db at: ${realm.config.path}");
+
+  realm.subscriptions.update((mutableSubscriptions) {
+    mutableSubscriptions.clear();
+    mutableSubscriptions.add(realm.all<Product>());
+    mutableSubscriptions.add(realm.all<Version>());
+    mutableSubscriptions.add(realm.all<Group>());
+    mutableSubscriptions.add(realm.all<Item>());
+  });
+
+  await realm.subscriptions.waitForSynchronization();
+  print("Syncronization completed for realm: ${realm.config.path}");
+  return realm;
 }
 
 class MyApp extends StatelessWidget {
@@ -74,15 +111,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<Product> parseProduct(String raw) async {
-  return Product(raw);
+Future<Product> parseProduct(Input input, String raw) async {
+  return Product(ObjectId(), raw, name: input.productName, owner: input.productOwner);
 }
 
-Future<Product> readProduct(String source) async {
-  final response = await http.get(Uri.parse(source));
+Future<Product> readProduct(Input input) async {
+  final response = await http.get(Uri.parse(input.sourcePath));
 
   if (response.statusCode == 200) {
-    return parseProduct(response.body);
+    return await parseProduct(input, response.body);
   } else {
     throw Exception('Failed to load Product');
   }
@@ -115,35 +152,4 @@ class Input {
       productOwner: json['productOwner'],
     );
   }
-}
-
-@RealmModel()
-class _Product {
-  late String raw;
-  late String? name;
-  late String? owner;
-  late DateTime? lastUpdatedDate;
-  late List<_Version> versions;
-}
-
-@RealmModel()
-class _Version {
-  late String version;
-  late DateTime? publishDate;
-  late List<_Group> groups;
-  late bool isReleased = false;
-}
-
-@RealmModel()
-class _Group {
-  late String name;
-  late List<_Item> items;
-}
-
-@RealmModel()
-class _Item {
-  late String content;
-  late String? number;
-  late String? refference;
-  late String? example;
 }

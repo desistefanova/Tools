@@ -1,0 +1,22 @@
+{
+    "bsonType": "object",
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "items": {
+            "bsonType": "array",
+            "items": {
+                "bsonType": "objectId"
+            }
+        },
+        "name": {
+            "bsonType": "string"
+        }
+    },
+    "required": [
+        "_id",
+        "name"
+    ],
+    "title": "Group"
+}
