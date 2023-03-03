@@ -9,7 +9,8 @@ part of 'model.dart';
 class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   Product(
     ObjectId id,
-    String raw, {
+    String raw,
+    String source, {
     String? name,
     String? owner,
     DateTime? lastUpdatedDate,
@@ -17,6 +18,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'raw', raw);
+    RealmObjectBase.set(this, 'source', source);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'owner', owner);
     RealmObjectBase.set(this, 'lastUpdatedDate', lastUpdatedDate);
@@ -35,6 +37,11 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   String get raw => RealmObjectBase.get<String>(this, 'raw') as String;
   @override
   set raw(String value) => RealmObjectBase.set(this, 'raw', value);
+
+  @override
+  String get source => RealmObjectBase.get<String>(this, 'source') as String;
+  @override
+  set source(String value) => RealmObjectBase.set(this, 'source', value);
 
   @override
   String? get name => RealmObjectBase.get<String>(this, 'name') as String?;
@@ -75,6 +82,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('id', RealmPropertyType.objectid,
           mapTo: '_id', primaryKey: true),
       SchemaProperty('raw', RealmPropertyType.string),
+      SchemaProperty('source', RealmPropertyType.string),
       SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('owner', RealmPropertyType.string, optional: true),
       SchemaProperty('lastUpdatedDate', RealmPropertyType.timestamp,
