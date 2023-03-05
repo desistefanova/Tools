@@ -28,7 +28,7 @@ class ElementItem extends StatelessWidget {
             //   },
             // ),
             title: Text(item.content),
-            subtitle: Text("Version: ${item.group!.version!.version} ${item.group!.name}"),
+            subtitle: Text("${item.group?.version?.product?.name} Version: ${item.group!.version!.version} ${item.group!.name}"),
             trailing: SizedBox(
               width: 25,
               child: PopupMenuButton<MenuOption>(

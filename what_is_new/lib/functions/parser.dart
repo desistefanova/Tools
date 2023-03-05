@@ -66,6 +66,9 @@ class MarkdownParser implements md.NodeVisitor {
       case 'h1':
       case 'h2':
         currentVersion = Version(ObjectId(), text.textContent, _product.ownerId, product: _product);
+        final dateString = text.textContent.substring(text.textContent.lastIndexOf("(") + 1, text.textContent.lastIndexOf(")"));
+        currentVersion!.isReleased = (dateString != "TBD" && dateString != "yyyy-MM-dd" && dateString != "YYYY-MM-DD");
+        if (currentVersion!.isReleased) currentVersion!.publishDate = DateTime.tryParse(dateString.replaceAll("--", "-"));
         _product.versions.add(currentVersion!);
         break;
       case 'h3':

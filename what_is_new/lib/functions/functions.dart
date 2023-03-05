@@ -28,15 +28,16 @@ Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) asyn
   final productMap = Map.fromEntries(realm.all<Product>().map((p) => MapEntry(p.source, p)));
   List<Product> products = [];
   List<Input> inputList = await loadInput(assetKey);
+  realm.write(() {
+    realm.deleteAll<Item>();
+    realm.deleteAll<Group>();
+    realm.deleteAll<Version>();
+    realm.deleteAll<Product>();
+  });
   for (var input in inputList) {
     String raw = await readProduct(input);
     final product = productMap[input.sourcePath];
     realm.write(() {
-      realm.deleteAll<Item>();
-      realm.deleteAll<Group>();
-      realm.deleteAll<Version>();
-      realm.deleteAll<Product>();
-
       final newProduct = Product(ObjectId(), raw, input.sourcePath, user.id, name: input.productName, owner: input.productOwner);
       MarkdownParser(newProduct).parse(raw);
       realm.add(newProduct);
