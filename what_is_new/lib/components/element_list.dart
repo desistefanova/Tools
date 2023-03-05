@@ -56,7 +56,8 @@ class _ElementListState extends State<ElementList> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                 child: StreamBuilder<RealmResultsChanges<Item>>(
                   stream: realmServices.realm
-                      .query<Item>("TRUEPREDICATE SORT(group.version.product.name ASC, group.version.publishDate DESC, group.name ASC, number ASC)")
+                      .query<Item>(
+                          "TRUEPREDICATE SORT(group.version.product.name ASC, group.version.isReleased ASC, group.version.publishDate DESC, group.name ASC, number ASC)")
                       .changes,
                   builder: (context, snapshot) {
                     final data = snapshot.data;
