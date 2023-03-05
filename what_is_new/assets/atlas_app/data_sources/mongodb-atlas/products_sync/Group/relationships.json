@@ -1,6 +1,6 @@
 {
     "items": {
-        "ref": "#/relationship/mongodb-atlas/products/Item",
+        "ref": "#/relationship/mongodb-atlas/products_sync/Item",
         "source_key": "items",
         "foreign_key": "_id",
         "is_list": true

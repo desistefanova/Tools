@@ -24,6 +24,8 @@ class MarkdownParser implements md.NodeVisitor {
   late Product _product;
   final StackCollection<String> _stack = StackCollection<String>();
   late RealmObject currentObject;
+  late bool toContinue;
+  late int index = 0;
 
   MarkdownParser(this._product) : currentObject = _product;
 
@@ -69,14 +71,27 @@ class MarkdownParser implements md.NodeVisitor {
       case 'li':
         if (currentObject is Group) {
           final item = Item(ObjectId(), text.textContent, _product.ownerId);
+          index++;
+          item.number = index;
           (currentObject as Group).items.add(item);
           currentObject = item;
+        }
+        if (currentObject is Item) {
+          (currentObject as Item).content += text.textContent;
         }
         break;
       case 'code':
         if (currentObject is Item) {
           final item = Item(ObjectId(), text.textContent, _product.ownerId);
           (currentObject as Item).content += "`${text.textContent}`";
+          currentObject = item;
+        }
+        break;
+      case 'a':
+        if (currentObject is Item) {
+          final item = Item(ObjectId(), text.textContent, _product.ownerId);
+          (currentObject as Item).content + text.textContent;
+          (currentObject as Item).refference = text.textContent;
           currentObject = item;
         }
         break;

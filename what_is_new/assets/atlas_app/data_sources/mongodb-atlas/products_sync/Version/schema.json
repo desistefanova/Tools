@@ -18,12 +18,16 @@
         },
         "version": {
             "bsonType": "string"
-        }
+        },
+        "owner_id": {
+            "bsonType": "string"
+        } 
     },
     "required": [
         "_id",
         "version",
-        "isReleased"
+        "isReleased",
+        "owner_id"
     ],
     "title": "Version"
 }

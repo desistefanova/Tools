@@ -21,11 +21,15 @@
             "items": {
                 "bsonType": "objectId"
             }
-        }
+        },
+        "owner_id": {
+            "bsonType": "string"
+        } 
     },
     "required": [
         "_id",
-        "raw"
+        "raw",
+        "owner_id"
     ],
     "title": "Product"
 }

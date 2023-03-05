@@ -66,7 +66,7 @@ class _Item {
   @MapTo('_id')
   late ObjectId id;
   late String content;
-  late String? number;
+  late int number = 0;
   late String? refference;
   late String? example;
   @MapTo('owner_id')

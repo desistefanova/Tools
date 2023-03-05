@@ -11,15 +11,20 @@
             "bsonType": "string"
         },
         "number": {
-            "bsonType": "string"
+            "bsonType": "int"
         },
         "refference": {
             "bsonType": "string"
-        }
+        },
+        "owner_id": {
+            "bsonType": "string"
+        } 
     },
     "required": [
         "_id",
-        "content"
+        "content",
+        "number",
+        "owner_id"
     ],
     "title": "Item"
 }

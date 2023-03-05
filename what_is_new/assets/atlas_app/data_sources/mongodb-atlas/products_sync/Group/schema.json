@@ -12,11 +12,15 @@
         },
         "name": {
             "bsonType": "string"
-        }
+        },
+        "owner_id": {
+            "bsonType": "string"
+        }        
     },
     "required": [
         "_id",
-        "name"
+        "name",
+        "owner_id"
     ],
     "title": "Group"
 }

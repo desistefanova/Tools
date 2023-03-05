@@ -24,8 +24,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'owner', owner);
     RealmObjectBase.set(this, 'lastUpdatedDate', lastUpdatedDate);
     RealmObjectBase.set(this, 'owner_id', ownerId);
-    RealmObjectBase.set<RealmList<Version>>(
-        this, 'versions', RealmList<Version>(versions));
+    RealmObjectBase.set<RealmList<Version>>(this, 'versions', RealmList<Version>(versions));
   }
 
   Product._();
@@ -56,18 +55,14 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   set owner(String? value) => RealmObjectBase.set(this, 'owner', value);
 
   @override
-  DateTime? get lastUpdatedDate =>
-      RealmObjectBase.get<DateTime>(this, 'lastUpdatedDate') as DateTime?;
+  DateTime? get lastUpdatedDate => RealmObjectBase.get<DateTime>(this, 'lastUpdatedDate') as DateTime?;
   @override
-  set lastUpdatedDate(DateTime? value) =>
-      RealmObjectBase.set(this, 'lastUpdatedDate', value);
+  set lastUpdatedDate(DateTime? value) => RealmObjectBase.set(this, 'lastUpdatedDate', value);
 
   @override
-  RealmList<Version> get versions =>
-      RealmObjectBase.get<Version>(this, 'versions') as RealmList<Version>;
+  RealmList<Version> get versions => RealmObjectBase.get<Version>(this, 'versions') as RealmList<Version>;
   @override
-  set versions(covariant RealmList<Version> value) =>
-      throw RealmUnsupportedSetError();
+  set versions(covariant RealmList<Version> value) => throw RealmUnsupportedSetError();
 
   @override
   String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
@@ -75,8 +70,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
 
   @override
-  Stream<RealmObjectChanges<Product>> get changes =>
-      RealmObjectBase.getChanges<Product>(this);
+  Stream<RealmObjectChanges<Product>> get changes => RealmObjectBase.getChanges<Product>(this);
 
   @override
   Product freeze() => RealmObjectBase.freezeObject<Product>(this);
@@ -86,16 +80,13 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Product._);
     return const SchemaObject(ObjectType.realmObject, Product, 'Product', [
-      SchemaProperty('id', RealmPropertyType.objectid,
-          mapTo: '_id', primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, mapTo: '_id', primaryKey: true),
       SchemaProperty('raw', RealmPropertyType.string),
       SchemaProperty('source', RealmPropertyType.string),
       SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('owner', RealmPropertyType.string, optional: true),
-      SchemaProperty('lastUpdatedDate', RealmPropertyType.timestamp,
-          optional: true),
-      SchemaProperty('versions', RealmPropertyType.object,
-          linkTarget: 'Version', collectionType: RealmCollectionType.list),
+      SchemaProperty('lastUpdatedDate', RealmPropertyType.timestamp, optional: true),
+      SchemaProperty('versions', RealmPropertyType.object, linkTarget: 'Version', collectionType: RealmCollectionType.list),
       SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
@@ -122,8 +113,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'publishDate', publishDate);
     RealmObjectBase.set(this, 'isReleased', isReleased);
     RealmObjectBase.set(this, 'owner_id', ownerId);
-    RealmObjectBase.set<RealmList<Group>>(
-        this, 'groups', RealmList<Group>(groups));
+    RealmObjectBase.set<RealmList<Group>>(this, 'groups', RealmList<Group>(groups));
   }
 
   Version._();
@@ -139,18 +129,14 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   set version(String value) => RealmObjectBase.set(this, 'version', value);
 
   @override
-  DateTime? get publishDate =>
-      RealmObjectBase.get<DateTime>(this, 'publishDate') as DateTime?;
+  DateTime? get publishDate => RealmObjectBase.get<DateTime>(this, 'publishDate') as DateTime?;
   @override
-  set publishDate(DateTime? value) =>
-      RealmObjectBase.set(this, 'publishDate', value);
+  set publishDate(DateTime? value) => RealmObjectBase.set(this, 'publishDate', value);
 
   @override
-  RealmList<Group> get groups =>
-      RealmObjectBase.get<Group>(this, 'groups') as RealmList<Group>;
+  RealmList<Group> get groups => RealmObjectBase.get<Group>(this, 'groups') as RealmList<Group>;
   @override
-  set groups(covariant RealmList<Group> value) =>
-      throw RealmUnsupportedSetError();
+  set groups(covariant RealmList<Group> value) => throw RealmUnsupportedSetError();
 
   @override
   bool get isReleased => RealmObjectBase.get<bool>(this, 'isReleased') as bool;
@@ -163,8 +149,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
 
   @override
-  Stream<RealmObjectChanges<Version>> get changes =>
-      RealmObjectBase.getChanges<Version>(this);
+  Stream<RealmObjectChanges<Version>> get changes => RealmObjectBase.getChanges<Version>(this);
 
   @override
   Version freeze() => RealmObjectBase.freezeObject<Version>(this);
@@ -174,13 +159,10 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Version._);
     return const SchemaObject(ObjectType.realmObject, Version, 'Version', [
-      SchemaProperty('id', RealmPropertyType.objectid,
-          mapTo: '_id', primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, mapTo: '_id', primaryKey: true),
       SchemaProperty('version', RealmPropertyType.string),
-      SchemaProperty('publishDate', RealmPropertyType.timestamp,
-          optional: true),
-      SchemaProperty('groups', RealmPropertyType.object,
-          linkTarget: 'Group', collectionType: RealmCollectionType.list),
+      SchemaProperty('publishDate', RealmPropertyType.timestamp, optional: true),
+      SchemaProperty('groups', RealmPropertyType.object, linkTarget: 'Group', collectionType: RealmCollectionType.list),
       SchemaProperty('isReleased', RealmPropertyType.bool),
       SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
@@ -213,11 +195,9 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  RealmList<Item> get items =>
-      RealmObjectBase.get<Item>(this, 'items') as RealmList<Item>;
+  RealmList<Item> get items => RealmObjectBase.get<Item>(this, 'items') as RealmList<Item>;
   @override
-  set items(covariant RealmList<Item> value) =>
-      throw RealmUnsupportedSetError();
+  set items(covariant RealmList<Item> value) => throw RealmUnsupportedSetError();
 
   @override
   String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
@@ -225,8 +205,7 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
 
   @override
-  Stream<RealmObjectChanges<Group>> get changes =>
-      RealmObjectBase.getChanges<Group>(this);
+  Stream<RealmObjectChanges<Group>> get changes => RealmObjectBase.getChanges<Group>(this);
 
   @override
   Group freeze() => RealmObjectBase.freezeObject<Group>(this);
@@ -236,25 +215,30 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Group._);
     return const SchemaObject(ObjectType.realmObject, Group, 'Group', [
-      SchemaProperty('id', RealmPropertyType.objectid,
-          mapTo: '_id', primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, mapTo: '_id', primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('items', RealmPropertyType.object,
-          linkTarget: 'Item', collectionType: RealmCollectionType.list),
+      SchemaProperty('items', RealmPropertyType.object, linkTarget: 'Item', collectionType: RealmCollectionType.list),
       SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
 }
 
 class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
+  static var _defaultsSet = false;
+
   Item(
     ObjectId id,
     String content,
     String ownerId, {
-    String? number,
+    int number = 0,
     String? refference,
     String? example,
   }) {
+    if (!_defaultsSet) {
+      _defaultsSet = RealmObjectBase.setDefaults<Item>({
+        'number': 0,
+      });
+    }
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'content', content);
     RealmObjectBase.set(this, 'number', number);
@@ -276,20 +260,17 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   set content(String value) => RealmObjectBase.set(this, 'content', value);
 
   @override
-  String? get number => RealmObjectBase.get<String>(this, 'number') as String?;
+  int get number => RealmObjectBase.get<int>(this, 'number') as int;
   @override
-  set number(String? value) => RealmObjectBase.set(this, 'number', value);
+  set number(int value) => RealmObjectBase.set(this, 'number', value);
 
   @override
-  String? get refference =>
-      RealmObjectBase.get<String>(this, 'refference') as String?;
+  String? get refference => RealmObjectBase.get<String>(this, 'refference') as String?;
   @override
-  set refference(String? value) =>
-      RealmObjectBase.set(this, 'refference', value);
+  set refference(String? value) => RealmObjectBase.set(this, 'refference', value);
 
   @override
-  String? get example =>
-      RealmObjectBase.get<String>(this, 'example') as String?;
+  String? get example => RealmObjectBase.get<String>(this, 'example') as String?;
   @override
   set example(String? value) => RealmObjectBase.set(this, 'example', value);
 
@@ -299,8 +280,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
 
   @override
-  Stream<RealmObjectChanges<Item>> get changes =>
-      RealmObjectBase.getChanges<Item>(this);
+  Stream<RealmObjectChanges<Item>> get changes => RealmObjectBase.getChanges<Item>(this);
 
   @override
   Item freeze() => RealmObjectBase.freezeObject<Item>(this);
@@ -310,10 +290,9 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Item._);
     return const SchemaObject(ObjectType.realmObject, Item, 'Item', [
-      SchemaProperty('id', RealmPropertyType.objectid,
-          mapTo: '_id', primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.objectid, mapTo: '_id', primaryKey: true),
       SchemaProperty('content', RealmPropertyType.string),
-      SchemaProperty('number', RealmPropertyType.string, optional: true),
+      SchemaProperty('number', RealmPropertyType.int),
       SchemaProperty('refference', RealmPropertyType.string, optional: true),
       SchemaProperty('example', RealmPropertyType.string, optional: true),
       SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),

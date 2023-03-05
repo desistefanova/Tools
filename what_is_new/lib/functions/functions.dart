@@ -32,9 +32,11 @@ Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) asyn
     String raw = await readProduct(input);
     final product = productMap[input.sourcePath];
     realm.write(() {
-      if (product != null) {
-        realm.delete<Product>(product);
-      }
+      realm.deleteAll<Item>();
+      realm.deleteAll<Group>();
+      realm.deleteAll<Version>();
+      realm.deleteAll<Product>();
+
       final newProduct = Product(ObjectId(), raw, input.sourcePath, user.id, name: input.productName, owner: input.productOwner);
       realm.add(newProduct);
       MarkdownParser(newProduct).parse(raw);

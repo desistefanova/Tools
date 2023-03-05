@@ -16,21 +16,20 @@ class RealmServices with ChangeNotifier {
     if (app.currentUser != null || currentUser != app.currentUser) {
       currentUser ??= app.currentUser;
       final flxConfig = Configuration.flexibleSync(currentUser!, [Product.schema, Version.schema, Group.schema, Item.schema]);
+      //Realm.deleteRealm(flxConfig.path);
       realm = Realm(flxConfig);
       print("Syncronization completed for realm: ${realm.config.path}");
-      if (realm.subscriptions.isEmpty) {
-        updateSubscriptions();
-      }
+      updateSubscriptions();
     }
   }
 
   Future<void> updateSubscriptions() async {
     realm.subscriptions.update((mutableSubscriptions) {
       mutableSubscriptions.clear();
-      mutableSubscriptions.add(realm.all<Product>());
-      mutableSubscriptions.add(realm.all<Version>());
-      mutableSubscriptions.add(realm.all<Group>());
-      mutableSubscriptions.add(realm.all<Item>());
+      mutableSubscriptions.add(realm.query<Product>(r'ownerId == $0', [currentUser!.id]));
+      mutableSubscriptions.add(realm.query<Version>(r'ownerId == $0', [currentUser!.id]));
+      mutableSubscriptions.add(realm.query<Group>(r'ownerId == $0', [currentUser!.id]));
+      mutableSubscriptions.add(realm.query<Item>(r'ownerId == $0', [currentUser!.id]));
     });
 
     await realm.subscriptions.waitForSynchronization();
@@ -55,11 +54,11 @@ class RealmServices with ChangeNotifier {
 
   Future<void> reloadData() async {
     try {
-      isWaiting = true;
-      notifyListeners();
+      //   isWaiting = true;
+      //   notifyListeners();
       await saveProductsIntoRealm(sourceFileAssetKey, realm, currentUser!);
     } finally {
-      isWaiting = false;
+      //   isWaiting = false;
       notifyListeners();
     }
   }
