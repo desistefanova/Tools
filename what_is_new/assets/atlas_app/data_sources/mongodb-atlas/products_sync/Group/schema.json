@@ -15,7 +15,10 @@
         },
         "owner_id": {
             "bsonType": "string"
-        }        
+        },
+        "version": {
+            "bsonType": "objectId"
+        }
     },
     "required": [
         "_id",

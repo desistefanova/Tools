@@ -1,1 +1,8 @@
-{}
+{
+    "group": {
+        "ref": "#/relationship/mongodb-atlas/products_sync/Group",
+        "source_key": "group",
+        "foreign_key": "_id",
+        "is_list": false
+    }
+}

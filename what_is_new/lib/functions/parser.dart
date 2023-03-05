@@ -21,13 +21,15 @@ const _blockTags = [
 ];
 
 class MarkdownParser implements md.NodeVisitor {
-  late Product _product;
+  final Product _product;
   final StackCollection<String> _stack = StackCollection<String>();
-  late RealmObject currentObject;
-  late bool toContinue;
-  late int index = 0;
+  Version? currentVersion;
+  Group? currentGroup;
+  Item? currentItem;
+  int index = 0;
+  String bullet = "";
 
-  MarkdownParser(this._product) : currentObject = _product;
+  MarkdownParser(this._product);
 
   /// parse all lines as Markdown
   void parse(String markdownContent) {
@@ -41,6 +43,9 @@ class MarkdownParser implements md.NodeVisitor {
   @override
   bool visitElementBefore(md.Element element) {
     print('veb: ${element.tag}');
+    if (element.tag == 'p' || element.tag == 'ol' || element.tag == 'ul' || element.tag == 'li') currentItem?.content += "\n$bullet";
+    if (element.tag == "code" && _stack.get() == "pre") currentItem?.content += "\n";
+    if (element.tag == "ol") bullet = " - ";
     _stack.push(element.tag);
     return true;
   }
@@ -48,7 +53,9 @@ class MarkdownParser implements md.NodeVisitor {
   @override
   void visitElementAfter(md.Element element) {
     print('vea: ${element.tag}');
+    if (element.tag == "ol") bullet = "";
     _stack.pop();
+    if (element.tag == "li" && _stack.get() == "ul") currentItem = null;
   }
 
   @override
@@ -56,43 +63,34 @@ class MarkdownParser implements md.NodeVisitor {
     print('vet: ${text.textContent}');
     String? lastLevel = _stack.get();
     switch (lastLevel) {
+      case 'h1':
       case 'h2':
-        final version = Version(ObjectId(), text.textContent, _product.ownerId);
-        _product.versions.add(version);
-        currentObject = version;
+        currentVersion = Version(ObjectId(), text.textContent, _product.ownerId, product: _product);
+        _product.versions.add(currentVersion!);
         break;
       case 'h3':
-        if (currentObject is Version) {
-          final group = Group(ObjectId(), text.textContent, _product.ownerId);
-          (currentObject as Version).groups.add(group);
-          currentObject = group;
-        }
+        currentVersion = currentVersion ?? Version(ObjectId(), "****", _product.ownerId, product: _product);
+        currentGroup = Group(ObjectId(), text.textContent, _product.ownerId, version: currentVersion);
+        currentVersion!.groups.add(currentGroup!);
         break;
       case 'li':
-        if (currentObject is Group) {
-          final item = Item(ObjectId(), text.textContent, _product.ownerId);
-          index++;
-          item.number = index;
-          (currentObject as Group).items.add(item);
-          currentObject = item;
-        }
-        if (currentObject is Item) {
-          (currentObject as Item).content += text.textContent;
-        }
-        break;
       case 'code':
-        if (currentObject is Item) {
-          final item = Item(ObjectId(), text.textContent, _product.ownerId);
-          (currentObject as Item).content += "`${text.textContent}`";
-          currentObject = item;
-        }
-        break;
       case 'a':
-        if (currentObject is Item) {
-          final item = Item(ObjectId(), text.textContent, _product.ownerId);
-          (currentObject as Item).content + text.textContent;
-          (currentObject as Item).refference = text.textContent;
-          currentObject = item;
+      case 'p':
+      case 'pre':
+        if (currentVersion != null && currentGroup != null) {
+          if (currentItem == null) {
+            final item = Item(ObjectId(), "", _product.ownerId);
+            index++;
+            item.number = index;
+            currentGroup = currentGroup ?? Group(ObjectId(), "****", _product.ownerId, version: currentVersion);
+            item.group = currentGroup;
+            currentGroup!.items.add(item);
+            currentItem = item;
+          }
+          String codeLiteral = (lastLevel == 'code') ? "`" : "";
+          currentItem?.content += "$codeLiteral${text.textContent}$codeLiteral";
+          if (lastLevel == 'a') currentItem?.refference = text.textContent;
         }
         break;
       default:

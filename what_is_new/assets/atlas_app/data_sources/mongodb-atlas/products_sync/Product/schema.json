@@ -13,7 +13,13 @@
         "owner": {
             "bsonType": "string"
         },
+        "owner_id": {
+            "bsonType": "string"
+        },
         "raw": {
+            "bsonType": "string"
+        },
+        "source": {
             "bsonType": "string"
         },
         "versions": {
@@ -21,15 +27,13 @@
             "items": {
                 "bsonType": "objectId"
             }
-        },
-        "owner_id": {
-            "bsonType": "string"
-        } 
+        }
     },
     "required": [
         "_id",
         "raw",
-        "owner_id"
+        "owner_id",
+        "source"
     ],
     "title": "Product"
 }

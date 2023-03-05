@@ -38,8 +38,8 @@ Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) asyn
       realm.deleteAll<Product>();
 
       final newProduct = Product(ObjectId(), raw, input.sourcePath, user.id, name: input.productName, owner: input.productOwner);
-      realm.add(newProduct);
       MarkdownParser(newProduct).parse(raw);
+      realm.add(newProduct);
     });
   }
 

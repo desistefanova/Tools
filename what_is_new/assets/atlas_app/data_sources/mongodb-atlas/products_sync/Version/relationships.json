@@ -4,5 +4,11 @@
         "source_key": "groups",
         "foreign_key": "_id",
         "is_list": true
+    },
+    "product": {
+        "ref": "#/relationship/mongodb-atlas/products_sync/Product",
+        "source_key": "product",
+        "foreign_key": "_id",
+        "is_list": false
     }
 }

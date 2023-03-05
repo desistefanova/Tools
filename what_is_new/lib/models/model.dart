@@ -47,6 +47,7 @@ class _Version {
   late bool isReleased = false;
   @MapTo('owner_id')
   late String ownerId;
+  late _Product? product;
 }
 
 @RealmModel()
@@ -58,6 +59,7 @@ class _Group {
   late List<_Item> items = [];
   @MapTo('owner_id')
   late String ownerId;
+  late _Version? version;
 }
 
 @RealmModel()
@@ -71,4 +73,5 @@ class _Item {
   late String? example;
   @MapTo('owner_id')
   late String ownerId;
+  late _Group? group;
 }

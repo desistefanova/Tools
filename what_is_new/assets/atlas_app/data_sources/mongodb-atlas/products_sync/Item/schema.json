@@ -10,15 +10,18 @@
         "example": {
             "bsonType": "string"
         },
+        "group": {
+            "bsonType": "objectId"
+        },
         "number": {
             "bsonType": "int"
         },
-        "refference": {
-            "bsonType": "string"
-        },
         "owner_id": {
             "bsonType": "string"
-        } 
+        },
+        "refference": {
+            "bsonType": "string"
+        }
     },
     "required": [
         "_id",

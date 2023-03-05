@@ -13,15 +13,18 @@
         "isReleased": {
             "bsonType": "bool"
         },
+        "owner_id": {
+            "bsonType": "string"
+        },
+        "product": {
+            "bsonType": "objectId"
+        },
         "publishDate": {
             "bsonType": "date"
         },
         "version": {
             "bsonType": "string"
-        },
-        "owner_id": {
-            "bsonType": "string"
-        } 
+        }
     },
     "required": [
         "_id",

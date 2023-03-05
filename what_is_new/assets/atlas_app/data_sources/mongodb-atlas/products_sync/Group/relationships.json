@@ -4,5 +4,11 @@
         "source_key": "items",
         "foreign_key": "_id",
         "is_list": true
+    },
+    "version": {
+        "ref": "#/relationship/mongodb-atlas/products_sync/Version",
+        "source_key": "version",
+        "foreign_key": "_id",
+        "is_list": false
     }
 }
