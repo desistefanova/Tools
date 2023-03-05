@@ -10,7 +10,8 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   Product(
     ObjectId id,
     String raw,
-    String source, {
+    String source,
+    String ownerId, {
     String? name,
     String? owner,
     DateTime? lastUpdatedDate,
@@ -22,6 +23,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'owner', owner);
     RealmObjectBase.set(this, 'lastUpdatedDate', lastUpdatedDate);
+    RealmObjectBase.set(this, 'owner_id', ownerId);
     RealmObjectBase.set<RealmList<Version>>(
         this, 'versions', RealmList<Version>(versions));
   }
@@ -68,6 +70,11 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       throw RealmUnsupportedSetError();
 
   @override
+  String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
+  @override
+  set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
+
+  @override
   Stream<RealmObjectChanges<Product>> get changes =>
       RealmObjectBase.getChanges<Product>(this);
 
@@ -89,6 +96,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
           optional: true),
       SchemaProperty('versions', RealmPropertyType.object,
           linkTarget: 'Version', collectionType: RealmCollectionType.list),
+      SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
 }
@@ -98,7 +106,8 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
 
   Version(
     ObjectId id,
-    String version, {
+    String version,
+    String ownerId, {
     DateTime? publishDate,
     bool isReleased = false,
     Iterable<Group> groups = const [],
@@ -112,6 +121,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'version', version);
     RealmObjectBase.set(this, 'publishDate', publishDate);
     RealmObjectBase.set(this, 'isReleased', isReleased);
+    RealmObjectBase.set(this, 'owner_id', ownerId);
     RealmObjectBase.set<RealmList<Group>>(
         this, 'groups', RealmList<Group>(groups));
   }
@@ -148,6 +158,11 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
   set isReleased(bool value) => RealmObjectBase.set(this, 'isReleased', value);
 
   @override
+  String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
+  @override
+  set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
+
+  @override
   Stream<RealmObjectChanges<Version>> get changes =>
       RealmObjectBase.getChanges<Version>(this);
 
@@ -167,6 +182,7 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('groups', RealmPropertyType.object,
           linkTarget: 'Group', collectionType: RealmCollectionType.list),
       SchemaProperty('isReleased', RealmPropertyType.bool),
+      SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
 }
@@ -174,11 +190,13 @@ class Version extends _Version with RealmEntity, RealmObjectBase, RealmObject {
 class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
   Group(
     ObjectId id,
-    String name, {
+    String name,
+    String ownerId, {
     Iterable<Item> items = const [],
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'owner_id', ownerId);
     RealmObjectBase.set<RealmList<Item>>(this, 'items', RealmList<Item>(items));
   }
 
@@ -202,6 +220,11 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
       throw RealmUnsupportedSetError();
 
   @override
+  String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
+  @override
+  set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
+
+  @override
   Stream<RealmObjectChanges<Group>> get changes =>
       RealmObjectBase.getChanges<Group>(this);
 
@@ -218,6 +241,7 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('items', RealmPropertyType.object,
           linkTarget: 'Item', collectionType: RealmCollectionType.list),
+      SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
 }
@@ -225,7 +249,8 @@ class Group extends _Group with RealmEntity, RealmObjectBase, RealmObject {
 class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   Item(
     ObjectId id,
-    String content, {
+    String content,
+    String ownerId, {
     String? number,
     String? refference,
     String? example,
@@ -235,6 +260,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'number', number);
     RealmObjectBase.set(this, 'refference', refference);
     RealmObjectBase.set(this, 'example', example);
+    RealmObjectBase.set(this, 'owner_id', ownerId);
   }
 
   Item._();
@@ -268,6 +294,11 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   set example(String? value) => RealmObjectBase.set(this, 'example', value);
 
   @override
+  String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
+  @override
+  set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
+
+  @override
   Stream<RealmObjectChanges<Item>> get changes =>
       RealmObjectBase.getChanges<Item>(this);
 
@@ -285,6 +316,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('number', RealmPropertyType.string, optional: true),
       SchemaProperty('refference', RealmPropertyType.string, optional: true),
       SchemaProperty('example', RealmPropertyType.string, optional: true),
+      SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
     ]);
   }
 }

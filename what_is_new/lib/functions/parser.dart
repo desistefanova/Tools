@@ -1,7 +1,8 @@
 import 'package:markdown/markdown.dart' as md;
 import 'package:realm/realm.dart';
-import 'package:what_is_new/model.dart';
 import 'dart:collection';
+
+import 'package:what_is_new/models/model.dart';
 
 const _blockTags = [
   'blockquote',
@@ -18,30 +19,6 @@ const _blockTags = [
   'pre',
   'ul',
 ];
-
-class StackCollection<T> {
-  final _queue = Queue<T>();
-
-  void push(T element) {
-    _queue.addLast(element);
-  }
-
-  T? pop() {
-    return this.isEmpty ? null : _queue.removeLast();
-  }
-
-  T? get() {
-    return this.isEmpty ? null : _queue.last!;
-  }
-
-  void clear() {
-    _queue.clear();
-  }
-
-  bool get isEmpty => _queue.isEmpty;
-  bool get isNotEmpty => _queue.isNotEmpty;
-  int get length => this._queue.length;
-}
 
 class MarkdownParser implements md.NodeVisitor {
   late Product _product;
@@ -78,27 +55,27 @@ class MarkdownParser implements md.NodeVisitor {
     String? lastLevel = _stack.get();
     switch (lastLevel) {
       case 'h2':
-        final version = Version(ObjectId(), text.textContent);
+        final version = Version(ObjectId(), text.textContent, _product.ownerId);
         _product.versions.add(version);
         currentObject = version;
         break;
       case 'h3':
         if (currentObject is Version) {
-          final group = Group(ObjectId(), text.textContent);
+          final group = Group(ObjectId(), text.textContent, _product.ownerId);
           (currentObject as Version).groups.add(group);
           currentObject = group;
         }
         break;
       case 'li':
         if (currentObject is Group) {
-          final item = Item(ObjectId(), text.textContent);
+          final item = Item(ObjectId(), text.textContent, _product.ownerId);
           (currentObject as Group).items.add(item);
           currentObject = item;
         }
         break;
       case 'code':
         if (currentObject is Item) {
-          final item = Item(ObjectId(), text.textContent);
+          final item = Item(ObjectId(), text.textContent, _product.ownerId);
           (currentObject as Item).content += "`${text.textContent}`";
           currentObject = item;
         }
@@ -106,4 +83,28 @@ class MarkdownParser implements md.NodeVisitor {
       default:
     }
   }
+}
+
+class StackCollection<T> {
+  final _queue = Queue<T>();
+
+  void push(T element) {
+    _queue.addLast(element);
+  }
+
+  T? pop() {
+    return this.isEmpty ? null : _queue.removeLast();
+  }
+
+  T? get() {
+    return this.isEmpty ? null : _queue.last!;
+  }
+
+  void clear() {
+    _queue.clear();
+  }
+
+  bool get isEmpty => _queue.isEmpty;
+  bool get isNotEmpty => _queue.isNotEmpty;
+  int get length => this._queue.length;
 }
