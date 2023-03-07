@@ -5,7 +5,13 @@ appThemeData() {
           primarySwatch: forestGreenColor,
           backgroundColor: mistColor,
           colorScheme: ColorScheme.fromSwatch(primarySwatch: forestGreenColor),
-          errorColor: darkRedColor)
+      errorColor: darkRedColor,
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
+        bodyMedium: TextStyle(fontSize: 10.0, fontFamily: 'Hind'),
+        bodySmall: TextStyle(fontSize: 8, fontFamily: 'Txt'),
+      ))
       .copyWith(
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
