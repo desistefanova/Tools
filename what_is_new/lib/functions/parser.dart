@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:realm/realm.dart';
 import 'dart:collection';
-
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 import 'package:what_is_new/models/model.dart';
 
 const _blockTags = [
@@ -54,8 +56,19 @@ class MarkdownParser implements md.NodeVisitor {
   void visitElementAfter(md.Element element) {
     print('vea: ${element.tag}');
     if (element.tag == "ol") bullet = "";
+    if (element.tag == "a") {
+      final href = element.attributes["href"];
+      if (href != null) {
+        currentItem?.refference = "${currentItem?.refference} $href";
+      }
+    }
     _stack.pop();
-    if (element.tag == "li" && _stack.get() == "ul") currentItem = null;
+    if (element.tag == 'h3' || element.tag == 'h2' || element.tag == 'h1' || (element.tag == "li" && _stack.get() == "ul")) {
+      if (currentItem != null && currentItem!.content.indexOf("\n") > 0) {
+        currentItem?.example = currentItem?.content.substring(0, currentItem?.content.indexOf("\n"));
+      }
+      currentItem = null;
+    }
   }
 
   @override
@@ -90,12 +103,14 @@ class MarkdownParser implements md.NodeVisitor {
             item.number = index;
             currentGroup = currentGroup ?? Group(ObjectId(), "****", _product.ownerId, version: currentVersion);
             item.group = currentGroup;
+            String textString = "${item.group?.version?.product?.name}${item.group?.version?.version}${item.group?.name}${text.textContent}";
+            item.checksum = calculateChecksum(textString);
             currentGroup!.items.add(item);
             currentItem = item;
           }
           String codeLiteral = (lastLevel == 'code') ? "`" : "";
           currentItem?.content += "$codeLiteral${text.textContent}$codeLiteral";
-          if (lastLevel == 'a') currentItem?.refference = text.textContent;
+          currentItem?.refference = "";
         }
         break;
       default:
@@ -125,4 +140,10 @@ class StackCollection<T> {
   bool get isEmpty => _queue.isEmpty;
   bool get isNotEmpty => _queue.isNotEmpty;
   int get length => this._queue.length;
+}
+
+String calculateChecksum(String text) {
+  var bytes = utf8.encode(text);
+  var digest = sha1.convert(bytes);
+  return "$digest";
 }

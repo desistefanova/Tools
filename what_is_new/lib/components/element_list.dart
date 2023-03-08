@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
@@ -15,6 +17,10 @@ class ElementList extends StatefulWidget {
 }
 
 class _ElementListState extends State<ElementList> {
+  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
+  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
+  late final PlutoGridStateManager stateManager;
+
   @override
   void initState() {
     super.initState();
@@ -25,80 +31,22 @@ class _ElementListState extends State<ElementList> {
     super.dispose();
   }
 
-  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
-  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
-  late final PlutoGridStateManager stateManager;
-
-  final List<PlutoColumn> columns = <PlutoColumn>[
-    PlutoColumn(title: 'Product', field: 'product', type: PlutoColumnType.text(), enableFilterMenuItem: true),
-    PlutoColumn(
-      title: 'Version',
-      field: 'version',
-      type: PlutoColumnType.text(),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'Is released',
-      field: 'released',
-      type: PlutoColumnType.select(
-        [false, true],
-        enableColumnFilter: true,
-      ),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'Published on',
-      field: 'publishDate',
-      type: PlutoColumnType.date(),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'Group',
-      field: 'group',
-      type: PlutoColumnType.text(),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'Number',
-      field: 'number',
-      type: PlutoColumnType.number(),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'ToDo',
-      field: 'todo',
-      type: PlutoColumnType.select(
-        ["-", "Yes", "No"],
-        enableColumnFilter: true,
-      ),
-      width: 100,
-    ),
-    PlutoColumn(
-      title: 'Content',
-      field: 'content',
-      type: PlutoColumnType.text(),
-      minWidth: 300,
-    ),
-  ];
+  void handleOnRowChecked(PlutoGridOnRowCheckedEvent event) {
+    // if (event.isRow) {
+    //   // or event.isAll
+    //   print('Toggled A Row.');
+    //   print(event.row?.cells['column1']?.value);
+    // } else {
+    //   print('Toggled All Rows.');
+    //   print(stateManager.checkedRows.length);
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
     final realmServices = Provider.of<RealmServices>(context);
-    final List<PlutoRow> rows = realmServices.realm
-        .query<Item>(
-            "TRUEPREDICATE SORT(group.version.product.name ASC, group.version.isReleased ASC, group.version.publishDate DESC, group.name ASC, number ASC)")
-        .map((r) => PlutoRow(cells: {
-              'product': PlutoCell(value: r.group?.version?.product?.name),
-              'version': PlutoCell(value: r.group?.version?.version),
-              'released': PlutoCell(value: r.group?.version?.isReleased),
-              'publishDate': PlutoCell(value: r.group?.version?.publishDate),
-              'group': PlutoCell(value: r.group?.name),
-              'number': PlutoCell(value: r.number),
-              'todo': PlutoCell(value: "-"),
-              'content': PlutoCell(value: r.content),
-            }))
-        .toList();
-
+    final columns = getColumns();
+    final rows = getRows(realmServices);
     return Stack(
       children: [
         Column(
@@ -111,24 +59,38 @@ class _ElementListState extends State<ElementList> {
                   rows: rows,
                   onLoaded: (PlutoGridOnLoadedEvent event) {
                     stateManager = event.stateManager;
+                    stateManager.setRowGroup(
+                      PlutoRowGroupByColumnDelegate(
+                        columns: [
+                          columns[0],
+                          columns[1],
+                        ],
+                        showFirstExpandableIcon: false,
+                      ),
+                    );
                     stateManager.setShowColumnFilter(true);
                   },
                   onChanged: (PlutoGridOnChangedEvent event) {
                     print(event);
                   },
+                  onRowChecked: handleOnRowChecked,
                   configuration: const PlutoGridConfiguration(
+                      columnSize: PlutoGridColumnSizeConfig(
+                        autoSizeMode: PlutoAutoSizeMode.scale,
+                        resizeMode: PlutoResizeMode.normal,
+                      ),
                       style: PlutoGridStyleConfig(
-                    columnTextStyle: TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    cellTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 9,
-                    ),
-                  )),
+                        columnTextStyle: TextStyle(
+                          color: Colors.black,
+                          decoration: TextDecoration.none,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cellTextStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 9,
+                        ),
+                      )),
                 ),
                 // StreamBuilder<RealmResultsChanges<Item>>(
                 //           stream: realmServices.realm
@@ -163,5 +125,94 @@ class _ElementListState extends State<ElementList> {
         realmServices.isWaiting ? waitingIndicator() : Container(),
       ],
     );
+  }
+
+  List<PlutoRow> getRows(RealmServices realmServices) {
+    return realmServices.realm
+        .query<Item>(
+            "TRUEPREDICATE SORT(group.version.product.name ASC, group.version.isReleased ASC, group.version.publishDate DESC, group.name ASC, number ASC)")
+        .map((r) {
+      final itemSelectedResult = realmServices.realm.query<ItemSelected>(r"checksum == $0", [r.checksum]);
+      ItemSelected? itemSelection = itemSelectedResult.isNotEmpty ? itemSelectedResult.first : null;
+      return PlutoRow(cells: {
+        'product': PlutoCell(value: r.group?.version?.product?.name),
+        'version': PlutoCell(value: r.group?.version?.version),
+        'released': PlutoCell(value: r.group?.version?.isReleased),
+        'publishDate': PlutoCell(value: r.group?.version?.publishDate),
+        'group': PlutoCell(value: r.group?.name),
+        'number': PlutoCell(value: r.number),
+        'example': PlutoCell(value: r.example),
+        'content': PlutoCell(value: r.content),
+        'refference': PlutoCell(value: r.refference),
+        'itemSelected': PlutoCell(value: itemSelection),
+        'hidden': PlutoCell(value: itemSelection?.hiddden ?? false),
+      });
+    }).toList();
+  }
+
+  List<PlutoColumn> getColumns() {
+    return <PlutoColumn>[
+      PlutoColumn(title: 'Product', field: 'product', type: PlutoColumnType.text(), enableFilterMenuItem: true),
+      PlutoColumn(
+        title: 'Group',
+        field: 'group',
+        type: PlutoColumnType.text(),
+        width: 100,
+      ),
+      PlutoColumn(
+        title: 'Text Preview',
+        field: 'example',
+        type: PlutoColumnType.text(),
+        minWidth: 300,
+        enableRowDrag: true,
+        enableRowChecked: true,
+      ),
+      PlutoColumn(
+        title: 'Content',
+        field: 'content',
+        type: PlutoColumnType.text(),
+        minWidth: 300,
+      ),
+      PlutoColumn(
+        title: 'Refference',
+        field: 'refference',
+        type: PlutoColumnType.text(),
+        minWidth: 300,
+      ),
+      PlutoColumn(
+        title: 'Version',
+        field: 'version',
+        type: PlutoColumnType.text(),
+        width: 100,
+      ),
+      PlutoColumn(
+        title: 'Is released',
+        field: 'released',
+        type: PlutoColumnType.select(["yes", " "]),
+        applyFormatterInEditing: true,
+        formatter: (value) => value ?? false ? "yes" : " ",
+        width: 100,
+      ),
+      PlutoColumn(
+        title: 'Published on',
+        field: 'publishDate',
+        type: PlutoColumnType.date(),
+        width: 100,
+      ),
+      PlutoColumn(
+        title: 'Number',
+        field: 'number',
+        type: PlutoColumnType.number(),
+        width: 100,
+      ),
+      PlutoColumn(
+        title: 'Hidden',
+        field: 'hidden',
+        type: PlutoColumnType.select(["yes", " "]),
+        applyFormatterInEditing: true,
+        formatter: (value) => value ?? false ? "yes" : " ",
+        width: 100,
+      ),
+    ];
   }
 }

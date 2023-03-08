@@ -25,8 +25,6 @@ Future<List<Input>> loadInput(String assetKey) async {
 }
 
 Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) async {
-  final productMap = Map.fromEntries(realm.all<Product>().map((p) => MapEntry(p.source, p)));
-  List<Product> products = [];
   List<Input> inputList = await loadInput(assetKey);
   realm.write(() {
     realm.deleteAll<Item>();
@@ -36,13 +34,11 @@ Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) asyn
   });
   for (var input in inputList) {
     String raw = await readProduct(input);
-    final product = productMap[input.sourcePath];
     realm.write(() {
       final newProduct = Product(ObjectId(), raw, input.sourcePath, user.id, name: input.productName, owner: input.productOwner);
       MarkdownParser(newProduct).parse(raw);
       realm.add(newProduct);
     });
   }
-
   await realm.syncSession.waitForUpload();
 }

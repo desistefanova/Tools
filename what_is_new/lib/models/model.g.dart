@@ -279,10 +279,12 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     String? refference,
     String? example,
     Group? group,
+    String checksum = "",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<Item>({
         'number': 0,
+        'checksum': "",
       });
     }
     RealmObjectBase.set(this, '_id', id);
@@ -292,6 +294,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'example', example);
     RealmObjectBase.set(this, 'owner_id', ownerId);
     RealmObjectBase.set(this, 'group', group);
+    RealmObjectBase.set(this, 'checksum', checksum);
   }
 
   Item._();
@@ -336,6 +339,12 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'group', value);
 
   @override
+  String get checksum =>
+      RealmObjectBase.get<String>(this, 'checksum') as String;
+  @override
+  set checksum(String value) => RealmObjectBase.set(this, 'checksum', value);
+
+  @override
   Stream<RealmObjectChanges<Item>> get changes =>
       RealmObjectBase.getChanges<Item>(this);
 
@@ -356,6 +365,83 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
       SchemaProperty('group', RealmPropertyType.object,
           optional: true, linkTarget: 'Group'),
+      SchemaProperty('checksum', RealmPropertyType.string),
+    ]);
+  }
+}
+
+class ItemSelected extends _ItemSelected
+    with RealmEntity, RealmObjectBase, RealmObject {
+  static var _defaultsSet = false;
+
+  ItemSelected(
+    ObjectId id,
+    String ownerId, {
+    String checksum = "",
+    bool hiddden = false,
+    bool selected = false,
+  }) {
+    if (!_defaultsSet) {
+      _defaultsSet = RealmObjectBase.setDefaults<ItemSelected>({
+        'checksum': "",
+        'hiddden': false,
+        'selected': false,
+      });
+    }
+    RealmObjectBase.set(this, '_id', id);
+    RealmObjectBase.set(this, 'owner_id', ownerId);
+    RealmObjectBase.set(this, 'checksum', checksum);
+    RealmObjectBase.set(this, 'hiddden', hiddden);
+    RealmObjectBase.set(this, 'selected', selected);
+  }
+
+  ItemSelected._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, '_id', value);
+
+  @override
+  String get ownerId => RealmObjectBase.get<String>(this, 'owner_id') as String;
+  @override
+  set ownerId(String value) => RealmObjectBase.set(this, 'owner_id', value);
+
+  @override
+  String get checksum =>
+      RealmObjectBase.get<String>(this, 'checksum') as String;
+  @override
+  set checksum(String value) => RealmObjectBase.set(this, 'checksum', value);
+
+  @override
+  bool get hiddden => RealmObjectBase.get<bool>(this, 'hiddden') as bool;
+  @override
+  set hiddden(bool value) => RealmObjectBase.set(this, 'hiddden', value);
+
+  @override
+  bool get selected => RealmObjectBase.get<bool>(this, 'selected') as bool;
+  @override
+  set selected(bool value) => RealmObjectBase.set(this, 'selected', value);
+
+  @override
+  Stream<RealmObjectChanges<ItemSelected>> get changes =>
+      RealmObjectBase.getChanges<ItemSelected>(this);
+
+  @override
+  ItemSelected freeze() => RealmObjectBase.freezeObject<ItemSelected>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(ItemSelected._);
+    return const SchemaObject(
+        ObjectType.realmObject, ItemSelected, 'ItemSelected', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', primaryKey: true),
+      SchemaProperty('ownerId', RealmPropertyType.string, mapTo: 'owner_id'),
+      SchemaProperty('checksum', RealmPropertyType.string),
+      SchemaProperty('hiddden', RealmPropertyType.bool),
+      SchemaProperty('selected', RealmPropertyType.bool),
     ]);
   }
 }

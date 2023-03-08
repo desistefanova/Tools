@@ -21,6 +21,11 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
           onPressed: () async => await realmServices.reloadData(),
         ),
         IconButton(
+          icon: Icon(Icons.clear_all),
+          tooltip: 'Cleare selections',
+          onPressed: () async => await realmServices.clearSelectedData(),
+        ),
+        IconButton(
           icon: const Icon(Icons.logout),
           tooltip: 'Log out',
           onPressed: () async => await logOut(context, realmServices),

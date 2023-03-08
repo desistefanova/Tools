@@ -15,7 +15,7 @@ class RealmServices with ChangeNotifier {
   RealmServices(this.app, this.sourceFileAssetKey) {
     if (app.currentUser != null || currentUser != app.currentUser) {
       currentUser ??= app.currentUser;
-      final flxConfig = Configuration.flexibleSync(currentUser!, [Product.schema, Version.schema, Group.schema, Item.schema]);
+      final flxConfig = Configuration.flexibleSync(currentUser!, [Product.schema, Version.schema, Group.schema, Item.schema, ItemSelected.schema]);
       //Realm.deleteRealm(flxConfig.path);
       realm = Realm(flxConfig);
       print("Syncronization completed for realm: ${realm.config.path}");
@@ -30,6 +30,7 @@ class RealmServices with ChangeNotifier {
       mutableSubscriptions.add(realm.query<Version>(r'ownerId == $0', [currentUser!.id]));
       mutableSubscriptions.add(realm.query<Group>(r'ownerId == $0', [currentUser!.id]));
       mutableSubscriptions.add(realm.query<Item>(r'ownerId == $0', [currentUser!.id]));
+      mutableSubscriptions.add(realm.query<ItemSelected>(r'ownerId == $0', [currentUser!.id]));
     });
 
     await realm.subscriptions.waitForSynchronization();
@@ -57,6 +58,18 @@ class RealmServices with ChangeNotifier {
       //   isWaiting = true;
       //   notifyListeners();
       await saveProductsIntoRealm(sourceFileAssetKey, realm, currentUser!);
+    } finally {
+      //   isWaiting = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> clearSelectedData() async {
+    try {
+      realm.write(() {
+        realm.deleteAll<ItemSelected>();
+        realm.addAll<ItemSelected>(realm.all<Item>().map((e) => ItemSelected(e.id, e.ownerId, checksum: e.checksum)));
+      });
     } finally {
       //   isWaiting = false;
       notifyListeners();
