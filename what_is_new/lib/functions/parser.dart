@@ -64,9 +64,6 @@ class MarkdownParser implements md.NodeVisitor {
     }
     _stack.pop();
     if (element.tag == 'h3' || element.tag == 'h2' || element.tag == 'h1' || (element.tag == "li" && _stack.get() == "ul")) {
-      if (currentItem != null && currentItem!.content.indexOf("\n") > 0) {
-        currentItem?.example = currentItem?.content.substring(0, currentItem?.content.indexOf("\n"));
-      }
       currentItem = null;
     }
   }

@@ -145,7 +145,6 @@ class _ElementListState extends State<ElementList> {
         'publishDate': PlutoCell(value: r.group?.version?.publishDate),
         'group': PlutoCell(value: r.group?.name),
         'number': PlutoCell(value: r.number),
-        'example': PlutoCell(value: r.example),
         'content': PlutoCell(value: r.content),
         'refference': PlutoCell(value: r.refference),
         'itemSelected': PlutoCell(value: itemSelection),
@@ -169,14 +168,6 @@ class _ElementListState extends State<ElementList> {
         enableEditingMode: false,
         width: 100,
       ),
-      // PlutoColumn(
-      //   title: 'Text Preview',
-      //   field: 'example',
-      //   type: PlutoColumnType.text(),
-      //   minWidth: 300,
-      //   enableRowDrag: true,
-      //   enableRowChecked: true,
-      // ),
       PlutoColumn(
         title: 'Content',
         field: 'content',
