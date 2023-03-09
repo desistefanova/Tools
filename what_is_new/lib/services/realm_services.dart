@@ -11,6 +11,7 @@ class RealmServices with ChangeNotifier {
   User? currentUser;
   App app;
   String sourceFileAssetKey;
+  late Future<void> Function() exportFunction;
 
   RealmServices(this.app, this.sourceFileAssetKey) {
     if (app.currentUser != null || currentUser != app.currentUser) {
@@ -74,6 +75,10 @@ class RealmServices with ChangeNotifier {
       //   isWaiting = false;
       notifyListeners();
     }
+  }
+
+  Future<void> exportToExcel() async {
+    await exportFunction();
   }
 
   void createItem(String summary, bool isComplete) {

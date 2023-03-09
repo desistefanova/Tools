@@ -16,6 +16,11 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
       automaticallyImplyLeading: false,
       actions: <Widget>[
         IconButton(
+          icon: Icon(Icons.import_export),
+          tooltip: 'Export',
+          onPressed: () async => await realmServices.exportToExcel(),
+        ),
+        IconButton(
           icon: Icon(Icons.refresh),
           tooltip: 'Reload',
           onPressed: () async => await realmServices.reloadData(),

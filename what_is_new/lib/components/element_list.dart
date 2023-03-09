@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
@@ -8,6 +10,7 @@ import 'package:what_is_new/components/element_item.dart';
 import 'package:what_is_new/models/model.dart';
 import 'package:what_is_new/services/realm_services.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
 
 class ElementList extends StatefulWidget {
   const ElementList({Key? key}) : super(key: key);
@@ -47,6 +50,7 @@ class _ElementListState extends State<ElementList> {
     final realmServices = Provider.of<RealmServices>(context);
     final columns = getColumns();
     final rows = getRows(realmServices);
+    realmServices.exportFunction = _defaultExportGridAsCSVCompatibleWithExcel;
     return Stack(
       children: [
         Column(
@@ -59,15 +63,15 @@ class _ElementListState extends State<ElementList> {
                   rows: rows,
                   onLoaded: (PlutoGridOnLoadedEvent event) {
                     stateManager = event.stateManager;
-                    stateManager.setRowGroup(
-                      PlutoRowGroupByColumnDelegate(
-                        columns: [
-                          columns[0],
-                          columns[1],
-                        ],
-                        showFirstExpandableIcon: false,
-                      ),
-                    );
+                    // stateManager.setRowGroup(
+                    //   PlutoRowGroupByColumnDelegate(
+                    //     columns: [
+                    //       columns[0],
+                    //       //columns[1],
+                    //     ],
+                    //     showFirstExpandableIcon: false,
+                    //   ),
+                    // );
                     stateManager.setShowColumnFilter(true);
                   },
                   onChanged: (PlutoGridOnChangedEvent event) {
@@ -152,44 +156,54 @@ class _ElementListState extends State<ElementList> {
 
   List<PlutoColumn> getColumns() {
     return <PlutoColumn>[
-      PlutoColumn(title: 'Product', field: 'product', type: PlutoColumnType.text(), enableFilterMenuItem: true),
+      PlutoColumn(
+        title: 'Product',
+        field: 'product',
+        type: PlutoColumnType.text(),
+        enableFilterMenuItem: false,
+      ),
       PlutoColumn(
         title: 'Group',
         field: 'group',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 100,
       ),
-      PlutoColumn(
-        title: 'Text Preview',
-        field: 'example',
-        type: PlutoColumnType.text(),
-        minWidth: 300,
-        enableRowDrag: true,
-        enableRowChecked: true,
-      ),
+      // PlutoColumn(
+      //   title: 'Text Preview',
+      //   field: 'example',
+      //   type: PlutoColumnType.text(),
+      //   minWidth: 300,
+      //   enableRowDrag: true,
+      //   enableRowChecked: true,
+      // ),
       PlutoColumn(
         title: 'Content',
         field: 'content',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
+        enableRowChecked: true,
         minWidth: 300,
       ),
       PlutoColumn(
         title: 'Refference',
         field: 'refference',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         minWidth: 300,
       ),
       PlutoColumn(
         title: 'Version',
         field: 'version',
         type: PlutoColumnType.text(),
+        enableEditingMode: false,
         width: 100,
       ),
       PlutoColumn(
         title: 'Is released',
         field: 'released',
-        type: PlutoColumnType.select(["yes", " "]),
-        applyFormatterInEditing: true,
+        type: PlutoColumnType.text(),
+        enableEditingMode: false,
         formatter: (value) => value ?? false ? "yes" : " ",
         width: 100,
       ),
@@ -197,12 +211,14 @@ class _ElementListState extends State<ElementList> {
         title: 'Published on',
         field: 'publishDate',
         type: PlutoColumnType.date(),
+        enableEditingMode: false,
         width: 100,
       ),
       PlutoColumn(
         title: 'Number',
         field: 'number',
         type: PlutoColumnType.number(),
+        enableEditingMode: false,
         width: 100,
       ),
       PlutoColumn(
@@ -210,9 +226,31 @@ class _ElementListState extends State<ElementList> {
         field: 'hidden',
         type: PlutoColumnType.select(["yes", " "]),
         applyFormatterInEditing: true,
-        formatter: (value) => value ?? false ? "yes" : " ",
+        formatter: (value) => (value is bool?)
+            ? value ?? false
+                ? "yes"
+                : " "
+            : value,
         width: 100,
       ),
     ];
+  }
+
+  Future<void> _defaultExportGridAsCSVCompatibleWithExcel() async {
+    String title = "pluto_grid_export";
+    var exportCSV = pluto_grid_export.PlutoGridExport.exportCSV(stateManager);
+    var exported = const Utf8Encoder().convert(
+        // FIX Add starting \u{FEFF} / 0xEF, 0xBB, 0xBF
+        // This allows open the file in Excel with proper character interpretation
+        // See https://stackoverflow.com/a/155176
+        '\u{FEFF}$exportCSV');
+
+    // await FileSaver.instance.saveFile("/Users/desim1/$title.csv", exported, ".csv");
+    String? outputFile = await FilePicker.platform.saveFile(dialogTitle: 'Save Your File to desired location', fileName: "$title.csv");
+
+    try {
+      File returnedFile = File('$outputFile');
+      await returnedFile.writeAsBytes(exported);
+    } catch (e) {}
   }
 }
