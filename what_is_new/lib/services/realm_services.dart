@@ -12,11 +12,12 @@ class RealmServices with ChangeNotifier {
   App app;
   String sourceFileAssetKey;
   late Future<void> Function() exportFunction;
+  late Future<void> Function() deleteRowsFunction;
 
   RealmServices(this.app, this.sourceFileAssetKey) {
     if (app.currentUser != null || currentUser != app.currentUser) {
       currentUser ??= app.currentUser;
-      final flxConfig = Configuration.flexibleSync(currentUser!, [Product.schema, Version.schema, Group.schema, Item.schema, ItemSelected.schema]);
+      final flxConfig = Configuration.flexibleSync(currentUser!, [Product.schema, Version.schema, Group.schema, Item.schema]);
       //Realm.deleteRealm(flxConfig.path);
       realm = Realm(flxConfig);
       print("Syncronization completed for realm: ${realm.config.path}");
@@ -25,16 +26,21 @@ class RealmServices with ChangeNotifier {
   }
 
   Future<void> updateSubscriptions() async {
-    realm.subscriptions.update((mutableSubscriptions) {
-      mutableSubscriptions.clear();
-      mutableSubscriptions.add(realm.query<Product>(r'ownerId == $0', [currentUser!.id]));
-      mutableSubscriptions.add(realm.query<Version>(r'ownerId == $0', [currentUser!.id]));
-      mutableSubscriptions.add(realm.query<Group>(r'ownerId == $0', [currentUser!.id]));
-      mutableSubscriptions.add(realm.query<Item>(r'ownerId == $0', [currentUser!.id]));
-      mutableSubscriptions.add(realm.query<ItemSelected>(r'ownerId == $0', [currentUser!.id]));
-    });
-
-    await realm.subscriptions.waitForSynchronization();
+    try {
+      isWaiting = true;
+      notifyListeners();
+      realm.subscriptions.update((mutableSubscriptions) {
+        mutableSubscriptions.clear();
+        mutableSubscriptions.add(realm.query<Product>(r'ownerId == $0', [currentUser!.id]));
+        mutableSubscriptions.add(realm.query<Version>(r'ownerId == $0', [currentUser!.id]));
+        mutableSubscriptions.add(realm.query<Group>(r'ownerId == $0', [currentUser!.id]));
+        mutableSubscriptions.add(realm.query<Item>(r'ownerId == $0', [currentUser!.id]));
+      });
+      await realm.subscriptions.waitForSynchronization();
+    } finally {
+      isWaiting = false;
+      notifyListeners();
+    }
   }
 
   Future<void> sessionSwitch() async {
@@ -56,25 +62,17 @@ class RealmServices with ChangeNotifier {
 
   Future<void> reloadData() async {
     try {
-      //   isWaiting = true;
-      //   notifyListeners();
+      isWaiting = true;
+      notifyListeners();
       await saveProductsIntoRealm(sourceFileAssetKey, realm, currentUser!);
     } finally {
-      //   isWaiting = false;
+      isWaiting = false;
       notifyListeners();
     }
   }
 
-  Future<void> clearSelectedData() async {
-    try {
-      realm.write(() {
-        realm.deleteAll<ItemSelected>();
-        realm.addAll<ItemSelected>(realm.all<Item>().map((e) => ItemSelected(e.id, e.ownerId, checksum: e.checksum)));
-      });
-    } finally {
-      //   isWaiting = false;
-      notifyListeners();
-    }
+  Future<void> deleteSelectedData() async {
+    deleteRowsFunction();
   }
 
   Future<void> exportToExcel() async {
@@ -87,9 +85,26 @@ class RealmServices with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteItem(Item item) {
-    realm.write(() => realm.delete(item));
-    notifyListeners();
+  Future<void> deleteItems(Iterable<ObjectId> idCollection) async {
+    try {
+      isWaiting = true;
+      notifyListeners();
+      final ids = idCollection.map((e) => "_id == oid($e)").join(" OR ");
+
+      final items = realm.query<Item>(ids);
+      realm.write(() => realm.deleteMany<Item>(items));
+      final groups = realm.query<Group>("items.@count == 0");
+      realm.write(() => realm.deleteMany<Group>(groups));
+      final versions = realm.query<Version>("groups.@count == 0");
+      realm.write(() => realm.deleteMany<Version>(versions));
+      final products = realm.query<Product>("versions.@count == 0");
+      realm.write(() => realm.deleteMany<Product>(products));
+
+      await realm.syncSession.waitForUpload();
+    } finally {
+      isWaiting = false;
+      notifyListeners();
+    }
   }
 
   Future<void> updateItem(Item item, {String? content}) async {

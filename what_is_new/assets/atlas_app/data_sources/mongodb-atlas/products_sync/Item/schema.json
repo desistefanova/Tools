@@ -4,6 +4,9 @@
         "_id": {
             "bsonType": "objectId"
         },
+        "checksum": {
+            "bsonType": "string"
+        },
         "content": {
             "bsonType": "string"
         },
@@ -27,7 +30,8 @@
         "_id",
         "content",
         "number",
-        "owner_id"
+        "owner_id",
+        "checksum"
     ],
     "title": "Item"
 }

@@ -101,7 +101,6 @@ class MarkdownParser implements md.NodeVisitor {
             currentGroup = currentGroup ?? Group(ObjectId(), "****", _product.ownerId, version: currentVersion);
             item.group = currentGroup;
             String textString = "${item.group?.version?.product?.name}${item.group?.version?.version}${item.group?.name}${text.textContent}";
-            item.checksum = calculateChecksum(textString);
             currentGroup!.items.add(item);
             currentItem = item;
           }
@@ -137,10 +136,4 @@ class StackCollection<T> {
   bool get isEmpty => _queue.isEmpty;
   bool get isNotEmpty => _queue.isNotEmpty;
   int get length => this._queue.length;
-}
-
-String calculateChecksum(String text) {
-  var bytes = utf8.encode(text);
-  var digest = sha1.convert(bytes);
-  return "$digest";
 }

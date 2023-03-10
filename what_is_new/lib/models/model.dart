@@ -74,17 +74,4 @@ class _Item {
   @MapTo('owner_id')
   late String ownerId;
   late _Group? group;
-  late String checksum = "";
-}
-
-@RealmModel()
-class _ItemSelected {
-  @PrimaryKey()
-  @MapTo('_id')
-  late ObjectId id;
-  @MapTo('owner_id')
-  late String ownerId;
-  late String checksum = "";
-  late bool hiddden = false;
-  late bool selected = false;
 }

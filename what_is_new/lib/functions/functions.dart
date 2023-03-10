@@ -36,8 +36,8 @@ Future<void> saveProductsIntoRealm(String assetKey, Realm realm, User user) asyn
     String raw = await readProduct(input);
     realm.write(() {
       final newProduct = Product(ObjectId(), raw, input.sourcePath, user.id, name: input.productName, owner: input.productOwner);
-      MarkdownParser(newProduct).parse(raw);
       realm.add(newProduct);
+      MarkdownParser(newProduct).parse(raw);
     });
   }
   await realm.syncSession.waitForUpload();
