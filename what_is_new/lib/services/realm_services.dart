@@ -89,10 +89,15 @@ class RealmServices with ChangeNotifier {
     try {
       isWaiting = true;
       notifyListeners();
-      final ids = idCollection.map((e) => "_id == oid($e)").join(" OR ");
-
-      final items = realm.query<Item>(ids);
-      realm.write(() => realm.deleteMany<Item>(items));
+      int i = 0;
+      int step = 400;
+      int max = idCollection.length - 1;
+      while (i <= max) {
+        final ids = idCollection.skip(i).take(step).map((e) => "_id == oid($e)").join(" OR ");
+        final items = realm.query<Item>(ids);
+        realm.write(() => realm.deleteMany<Item>(items));
+        i += step - 1;
+      }
       final groups = realm.query<Group>("items.@count == 0");
       realm.write(() => realm.deleteMany<Group>(groups));
       final versions = realm.query<Version>("groups.@count == 0");
@@ -101,6 +106,9 @@ class RealmServices with ChangeNotifier {
       realm.write(() => realm.deleteMany<Product>(products));
 
       await realm.syncSession.waitForUpload();
+    } catch (e) {
+      isWaiting = false;
+      notifyListeners();
     } finally {
       isWaiting = false;
       notifyListeners();

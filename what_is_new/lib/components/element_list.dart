@@ -128,7 +128,6 @@ class _ElementListState extends State<ElementList> {
         ));
 
         stateManager.setShowLoading(false);
-        setState(() {});
       });
     });
   }
@@ -159,7 +158,7 @@ class _ElementListState extends State<ElementList> {
         title: 'Published on',
         field: 'publishDate',
         type: PlutoColumnType.date(),
-        enableEditingMode: false,
+        enableEditingMode: true,
         width: 100,
       ),
       PlutoColumn(
@@ -217,16 +216,22 @@ class _ElementListState extends State<ElementList> {
     try {
       File returnedFile = File('$outputFile');
       await returnedFile.writeAsBytes(exported);
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _deleteSelectedRows() async {
-    final realmServices = Provider.of<RealmServices>(context, listen: false);
+    try {
+      final realmServices = Provider.of<RealmServices>(context, listen: false);
 
-    var toDelete = stateManager.iterateAllRow.where((r) => r.checked ?? false);
-    final ids = toDelete.where((e) => e.cells["key"] != null).map((e) => e.cells["key"]!.value as ObjectId);
-    await realmServices.deleteItems(ids);
+      var toDelete = stateManager.iterateAllRow.where((r) => r.checked ?? false);
+      final ids = toDelete.map((e) => e.cells["key"]?.value as ObjectId? ?? ObjectId());
+      await realmServices.deleteItems(ids);
 
-    stateManager.removeRows(toDelete.toList(), notify: true);
+      stateManager.removeRows(toDelete.toList(), notify: true);
+    } catch (e) {
+      print(e);
+    }
   }
 }
