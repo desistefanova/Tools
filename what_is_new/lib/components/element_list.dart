@@ -119,13 +119,13 @@ class _ElementListState extends State<ElementList> {
         realmServices.deleteRowsFunction = _deleteSelectedRows;
         stateManager.refRows.addAll(value);
 
-        stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(
-          columns: [
-            columns[1],
-            columns[2],
-          ],
-          showFirstExpandableIcon: false,
-        ));
+        // stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(
+        //   columns: [
+        //     columns[1],
+        //     columns[2],
+        //   ],
+        //   showFirstExpandableIcon: false,
+        // ));
 
         stateManager.setShowLoading(false);
       });
