@@ -89,15 +89,12 @@ class RealmServices with ChangeNotifier {
     try {
       isWaiting = true;
       notifyListeners();
-      int i = 0;
-      int step = 400;
-      int max = idCollection.length - 1;
-      while (i <= max) {
-        final ids = idCollection.skip(i).take(step).map((e) => "_id == oid($e)").join(" OR ");
-        final items = realm.query<Item>(ids);
-        realm.write(() => realm.deleteMany<Item>(items));
-        i += step - 1;
-      }
+      print(idCollection.length);
+      final ids = idCollection.map((e) => "oid($e)").join(",");
+      print(ids);
+      final items = realm.query<Item>("_id IN {$ids}");
+      realm.write(() => realm.deleteMany<Item>(items));
+
       final groups = realm.query<Group>("items.@count == 0");
       realm.write(() => realm.deleteMany<Group>(groups));
       final versions = realm.query<Version>("groups.@count == 0");
